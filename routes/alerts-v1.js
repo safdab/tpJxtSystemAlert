@@ -66,32 +66,34 @@ router.get('/:id', function(req, res, next){
     }
 })
 
-router.get('/', (req, res) =>{
-    // res.json(Alert.findById(req.params.id))
-    alertsModel.find(null, (err, mesAlerts)=>{
-        if(err) {throw err };
-        res.json({'alerts': mesAlerts});
-    })
-    res.json("alertsModel")
+// router.get('/', (req, res) =>{
+//     // res.json(Alert.findById(req.params.id))
+//     alertsModel.find(null, (err, mesAlerts)=>{
+//         if(err) {throw err };
+//         res.json({'alerts': mesAlerts});
+//     })
+//     res.json("alertsModel")
 
-})
+// })
 
 
 //create a new alert in the alerts list
 router.post('/alerts', (req, res) =>{
-    const newAlert = new Alert(req.body)
+    const newAlert = req.body
 
-    //saving the new alert into the database
-    newAlert.save().then((result) => {
-        console.log(result)
-        res.json('Alert created successfully ')
-    }).catch((err) => {
-        console.log("error "+ err);
-        res.status(err.status)
-        res.json("Aie une erreur")
-    });
-
-    
+    alertsModel.add(newAlert, (err, result) =>{
+        if(err){
+            console.log("result dans post " + result)
+            res
+               .status(405)
+               .json("Invalid input")
+        }
+        else{
+            console.log("result dans post " + result)
+            res.status(200)
+            res.json("successful operation ")
+        }
+    })
 })
 
 router.put('/:id', (req, res, next) => {
@@ -123,6 +125,23 @@ router.put('/:id', (req, res, next) => {
             .json({ message: 'wrong parameters' });
       }
       next()
+})
+
+router.delete('/:id', (req, res, next)=>{
+    const id = req.params.id
+    if(id){
+        alertsModel.remove(id, (err, results)=>{
+            if(err) {
+                res.status(404).json("Alert not found")
+            }
+            else{
+                res.status(200).json("Alert successfully deleted")
+            }
+        })
+    }
+    else{
+        res.status(400).json("Invalid ID supplied")
+    }
 })
 
 

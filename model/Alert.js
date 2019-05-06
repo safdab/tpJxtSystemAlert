@@ -20,27 +20,22 @@ module.exports = Alert;
 
 
 
-
-
 const add = (alert, callback) =>{
    const monAlert = {
-      ...alert,
-      id: uuid1()
+      ...alert
+      // ,id: uuid1()
    }
   const newAlert = new Alert(monAlert)
-  newAlert.save.then((err, result) => {
-      if(err) callback(new Error("Alert not saved"), null)
-      else{
-         callback(null, result)
-      }
+  newAlert.save().then((result) => {
+      callback(null, result)
+  }).catch((err) =>{
+     callback(err, null)
   })
 }
 
 
 const get = (alertId, callback) => {
    Alert.find({id: alertId}, (err, alert) =>{
-      // if(err) return callback(err, null)
-      // return callback(null, alert);
       err ? callback(err, null) : callback(null, alert)
    })
 }
@@ -58,15 +53,27 @@ const update = (id, newAlertProperties, callback) => {
    )
 }
 
-const remove = (id) => {
-
+const remove = (id, callback) => {
+   Alert.findOneAndDelete({id: id}, (err, result)=>{
+      if(err) callback(err, null)
+      else{
+         callback(null, result)
+      }
+   })
 }
 
 
+const getFromStatus = (mystatus,callback) => {
+   Alerts.find({status:{$in:mystatus}},(err,alert)=>{
+   err?callback(err,null):callback(null,alert)
+  
+   })
+  };
 
-// Export the model
+
 
 module.exports.get = get
 module.exports.add = add
 module.exports.update = update
 module.exports.remove = remove
+module.exports.getFromStatus = getFromStatus
