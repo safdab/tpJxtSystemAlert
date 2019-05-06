@@ -1,29 +1,51 @@
 const express = require('express')
 const router = express.Router()
-const alert = require('./../model/Alert')
+const category = require('./../model/Category')
+const status = require('./../model/Status')
 
 
-//control usermodel initialisation
-router.use((req, res, next) =>{
-    if(!alert){
-       res
-        .status(500)
-        .json({message: 'model not initialised'}) 
-    }
-    next()
+let alertsModel = undefined
+
+/* Control usermodel initialisation */
+router.use((req, res, next) => {
+  /* istanbul ignore if */
+  if (!alertsModel) {
+    res
+      .status(500)
+      .json({message: 'model not initialised'})
+  }
+  next()
 })
 
 
+// function addAlert(){
+//     const al = new Alert();
+//     al.id = "monID";
+//     al.type = category.weather;
+//     al.label = "Mon Premier Alert";
+//     al.status = status.get(1);
+//     al.from = "Now";
+//     al.to = "tomorrow"
+//     al.save.then((result) => {
+//         console.log(result)
+//     }).catch((err) => {
+//         console.log("error "+ err);
+//     });
+// }
 
 
 //get a specific alert by id
 router.get('/:id', function(req, res, next){
+    // addAlert();
     const id = req.params.id
     if(id){
         try{
-           const alertFound = alert.get(id)
+        //    const alertFound =  alertsModel.get(id).exec(function(err, alerts) {
+        //     console.log(alerts);
+            alertsModel.get(id, (err, alertFound) => {
+
            if(alertFound){
-               res.json("successful operation")
+               res.json(alertFound)
                res.status(200)
            } 
            else{
@@ -31,6 +53,7 @@ router.get('/:id', function(req, res, next){
                   .status(404)
                   .json({message: `alert not found with id ${id}`})
            } 
+          })
         }
         catch (exc){
             res.status(404)
@@ -44,7 +67,11 @@ router.get('/:id', function(req, res, next){
 })
 
 router.get('/', (req, res) =>{
-    // res.json(alert)
+    // res.json(Alert.findById(req.params.id))
+    alertsModel.find(null, (err, mesAlerts)=>{
+        if(err) {throw err };
+        res.json({'alerts': mesAlerts});
+    })
     res.json("alertsModel")
 
 })
@@ -52,14 +79,7 @@ router.get('/', (req, res) =>{
 
 //create a new alert in the alerts list
 router.post('/alerts', (req, res) =>{
-    const newAlert = new alert({
-        id : req.body.id,
-        type: req.body.type,
-        label: req.body.label,
-        status: req.body.status,
-        from: req.body.from,
-        to: req.body.to
-    })
+    const newAlert = new Alert(req.body)
 
     //saving the new alert into the database
     newAlert.save().then((result) => {
@@ -67,11 +87,42 @@ router.post('/alerts', (req, res) =>{
         res.json('Alert created successfully ')
     }).catch((err) => {
         console.log("error "+ err);
+        res.status(err.status)
+        res.json("Aie une erreur")
     });
 
     
 })
 
+router.put('/:id', (req, res, next) => {
+    const id = req.params.id
+    const newUserProperties = req.body
+  
+    /* istanbul ignore else */
+    if (id && newUserProperties) {
+        alertModel.update(id, newAlertProperties, (err, result) => {
+            if (err) {
+              if (err.message === "alert not found")
+                res
+                    .status(404)
+                    .json({ message: err.message });
+              else {
+                res
+                    .status(400)
+                    .json({ message: err.message });
+              }
+            } else {
+              res
+                .status(200)
+                .json({message:'Alert updated succesfully'});
+            }
+        });
+    } else {
+          res
+            .status(405)
+            .json({ message: 'wrong parameters' });
+      }
+})
 
 
 function alertFound(alertFound){
@@ -85,9 +136,13 @@ function alertFound(alertFound){
     }
 }
 
-router.post('/alerts', function(req, res, next){
-    const newAlert = red.body
+// router.post('/alerts', function(req, res, next){
+//     const newAlert = red.body
     
-} )
+// } )
 
-module.exports=router;
+/** return a closure to initialize model */
+module.exports = (model) => {
+    alertsModel = model
+    return router
+  }
