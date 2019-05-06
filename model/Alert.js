@@ -63,10 +63,9 @@ const remove = (id, callback) => {
 }
 
 
-const getFromStatus = (mystatus,callback) => {
-   Alerts.find({status:{$in:mystatus}},(err,alert)=>{
-   err?callback(err,null):callback(null,alert)
-  
+const getFromCriterias = (criteria,callback) => {
+   Alert.find({status:{$in:criteria}},(err,alert)=>{
+   err ? callback(err,null): callback(null,alert)
    })
   };
 
@@ -76,4 +75,4 @@ module.exports.get = get
 module.exports.add = add
 module.exports.update = update
 module.exports.remove = remove
-module.exports.getFromStatus = getFromStatus
+module.exports.getFromCriterias = getFromCriterias

@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const category = require('./../model/Category')
-const status = require('./../model/Status')
 
+const statusList = Object.getOwnPropertyNames(
+    require("./../model/Status").Status
+);
 
 let alertsModel = undefined
 
@@ -66,15 +68,41 @@ router.get('/:id', function(req, res, next){
     }
 })
 
-// router.get('/', (req, res) =>{
-//     // res.json(Alert.findById(req.params.id))
-//     alertsModel.find(null, (err, mesAlerts)=>{
-//         if(err) {throw err };
-//         res.json({'alerts': mesAlerts});
-//     })
-//     res.json("alertsModel")
 
-// })
+
+
+// GET an alert with one or multiple status separated by comma 
+router.get('/search:criteria', (req, res, next) =>{
+    const criteria = req.params.criteria
+    if(criteria){
+        const tempStatus = criteria.split(",");
+        const invalidTag = tempStatus.reduce(
+            (accumulator, currentValue) => accumulateur || !statusList.includes(currentValue),
+            false
+        );
+        if (!invalidTag) {
+            alertModel.getFromCriterias(tmp, (err, result) => {
+              if (err || result.length < 1) {
+                res.status(404).json("alert not found");
+              } else {
+                  res.status(200).json('successful operation');
+              }
+            });
+          } else {
+            res
+              .status(400)
+              .json("Invalid tag value" )
+          }
+        } else {
+          res
+            .status(400)
+            .json( "wrong parameters"
+            )
+        }
+} )
+
+
+
 
 
 //create a new alert in the alerts list
