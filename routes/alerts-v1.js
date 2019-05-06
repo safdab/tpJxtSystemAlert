@@ -96,11 +96,11 @@ router.post('/alerts', (req, res) =>{
 
 router.put('/:id', (req, res, next) => {
     const id = req.params.id
-    const newUserProperties = req.body
+    const newAlertProperties = req.body
   
     /* istanbul ignore else */
-    if (id && newUserProperties) {
-        alertModel.update(id, newAlertProperties, (err, result) => {
+    if (id && newAlertProperties) {
+        alertsModel.update(id, newAlertProperties, (err, result) => {
             if (err) {
               if (err.message === "alert not found")
                 res
@@ -122,6 +122,7 @@ router.put('/:id', (req, res, next) => {
             .status(405)
             .json({ message: 'wrong parameters' });
       }
+      next()
 })
 
 

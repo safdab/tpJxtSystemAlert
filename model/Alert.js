@@ -13,6 +13,8 @@ const alertSchema = new Schema({
    to : {type: String, required: true}
 })
 
+mongoose.set('useFindAndModify', false);
+
 const Alert =  mongoose.model('Alert', alertSchema);
 module.exports = Alert;
 
@@ -44,13 +46,13 @@ const get = (alertId, callback) => {
 }
 
 
-const update = (id, newAlertProperties) => {
+const update = (id, newAlertProperties, callback) => {
    Alert.findOneAndUpdate({id: id},
       newAlertProperties, {new: true}, 
       (err, alert) =>{
-         if(err) throw new Error("Alert non mise a jour !")
+         if(err) callback(err, null)
          else{
-            console.log("Alert ajouté "+alert)
+            callback(null, alert)
          }
       }
    )
