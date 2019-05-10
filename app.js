@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const mongoose = require('mongoose');
 
+const url = require('./config/config')
+
 
 //Definition des routeurs
 const alertsRouter = require('./routes/alerts-v1')
@@ -13,7 +15,7 @@ const app = express();
 mongoose.Promise = global.Promise;
 
 // Set up mongoose connection
-let dev_db_url = "mongodb://localhost:27017/alerts";
+const dev_db_url = "mongodb://localhost:27017/alerts"
 let mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose
     .connect(mongoDB)

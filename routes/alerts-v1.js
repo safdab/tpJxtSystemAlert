@@ -20,25 +20,25 @@ router.use((req, res, next) => {
 })
 
 
-// function addAlert(){
-//     const al = new Alert();
-//     al.id = "monID";
-//     al.type = category.weather;
-//     al.label = "Mon Premier Alert";
-//     al.status = status.get(1);
-//     al.from = "Now";
-//     al.to = "tomorrow"
-//     al.save.then((result) => {
-//         console.log(result)
-//     }).catch((err) => {
-//         console.log("error "+ err);
-//     });
-// }
+function addAlert(){
+    const al = new Alert();
+    al.id = "monID";
+    al.type = category.weather;
+    al.label = "Mon Premier Alert";
+    al.status = status.get(1);
+    al.from = "Now";
+    al.to = "tomorrow"
+    al.save.then((result) => {
+        console.log(result)
+    }).catch((err) => {
+        console.log("error "+ err);
+    });
+}
 
 
 //get a specific alert by id
 router.get('/:id', function(req, res, next){
-    // addAlert();
+    addAlert();
     const id = req.params.id
     if(id){
         try{
@@ -118,7 +118,7 @@ router.post('/alerts', (req, res) =>{
         }
         else{
             console.log("result dans post " + result)
-            res.status(200)
+            res.status(201)
             res.json("successful operation ")
         }
     })
